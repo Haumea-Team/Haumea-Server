@@ -26,6 +26,11 @@ It is one small program with no dependencies: run it on the machine your game se
 - **Logs as open.mp does.** `log.txt` with `[2026-11-08T01:30:12+0000] [Info] ...` lines: who
   signs in and from where, the chat, and every admin action (invites, roles, removals, locks).
 - **Ping.** Everyone sees everyone's round trip to the server.
+- **Tells you when it's behind.** Haumea updates itself; when an editor newer than the server tries
+  to join, it's told the server needs updating, and the log says so. Once a day the server also asks
+  GitHub's API (only that, with curl) for the latest release and logs a warning when there's a newer
+  one; `--no-update-check` (or `HAUMEA_SERVER_UPDATE_CHECK=0`) turns that off. `--version` says which
+  this is.
 
 ## Build
 

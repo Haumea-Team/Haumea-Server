@@ -13,3 +13,4 @@
   every admin action; settings from .env and HAUMEA_SERVER_* variables.
 - Commands: invite, users, role, passwd, remove, fingerprint.
 - CI: static Linux and Windows builds, a smoke test, and a release with both builds for each v* tag.
+- Says which side is out of date when versions differ, logs it, and checks GitHub for a newer release once a day.

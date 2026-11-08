@@ -14,6 +14,8 @@
 #include "mpprotocol.h"	// first: winsock2.h before windows.h
 #include "mprelay.h"
 #include "mpaccounts.h"
+#include "update.h"
+#include "version.h"
 
 #include <random>
 #include <signal.h>
@@ -97,6 +99,8 @@ usage(FILE *out)
 		"  --no-log-connections  leave who comes and goes out of the log\n"
 		"  --timestamp-format F  strftime format of the log's timestamps (default [%%Y-%%m-%%dT%%H:%%M:%%S%%z])\n"
 		"  --env FILE        read settings from FILE (KEY=VALUE lines)\n"
+		"  --no-update-check don't ask GitHub once a day whether a newer release is out\n"
+		"  --version         this build's version\n"
 		"\n"
 		"Without --state-dir: one session behind one password, as an editor hosting has it:\n"
 		"  --password TEXT   what joining needs; without one a random password is made and printed\n"
@@ -308,6 +312,7 @@ main(int argc, char **argv)
 	options.logConnections = envFlag("LOG_CONNECTIONS", true);
 	gUseTimestamp = envFlag("USE_TIMESTAMP", true);
 	options.allowReplace = !envFlag("NO_REPLACE", false);
+	bool updateCheck = envFlag("UPDATE_CHECK", true);
 
 	for(int i = 1; i < argc; i++){
 		const char *arg = argv[i];
@@ -322,6 +327,14 @@ main(int argc, char **argv)
 		};
 		if(arg[0] != '-')
 			return command(options.stateDir, argc, argv, i);
+		if(strcmp(arg, "--version") == 0){
+			printf("haumea-server %s (multiplayer protocol %u)\n", HAUMEA_SERVER_VERSION, MP_PROTOCOL);
+			return 0;
+		}
+		if(strcmp(arg, "--no-update-check") == 0){
+			updateCheck = false;
+			continue;
+		}
 		if(strcmp(arg, "--help") == 0 || strcmp(arg, "-h") == 0){
 			usage(stdout);
 			return 0;
@@ -405,7 +418,11 @@ main(int argc, char **argv)
 				options.password += letters[random() % (sizeof(letters) - 1)];
 		}
 	}
-	printLine("Starting haumea-server (multiplayer protocol 5)");
+	{
+		char line[128];
+		snprintf(line, sizeof(line), "Starting haumea-server %s (multiplayer protocol %u)", HAUMEA_SERVER_VERSION, MP_PROTOCOL);
+		printLine(line);
+	}
 	std::string error;
 	if(!MpRelayStart(options, &error)){
 		printLine(("[Error] " + error).c_str());
@@ -434,9 +451,27 @@ main(int argc, char **argv)
 #else
 	signal(SIGPIPE, SIG_IGN);
 #endif
+	// A newer release: said in the log once a day, after a first look a minute in.
+	time_t nextCheck = updateCheck ? time(nullptr) + 60 : 0;
+	bool checking = false;
 	while(!gStop){
 		MpRelayWait(0.25);
 		MpRelayUpdate();
+		if(nextCheck && !checking && time(nullptr) >= nextCheck){
+			UpdateCheckStart();
+			checking = true;
+		}
+		if(checking && UpdateCheckDone()){
+			checking = false;
+			nextCheck = time(nullptr) + 24 * 60 * 60;
+			std::string newer = UpdateCheckNewer();
+			if(!newer.empty()){
+				char line[200];
+				snprintf(line, sizeof(line), "[Warning] haumea-server %s is out (this is %s): update it, "
+					"e.g. with the release's install.sh", newer.c_str(), HAUMEA_SERVER_VERSION);
+				printLine(line);
+			}
+		}
 	}
 	MpRelayStop();
 	if(gLogFile)

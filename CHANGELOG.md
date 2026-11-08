@@ -12,3 +12,4 @@
 - Logging as open.mp's (log.txt, timestamps, [Info]/[Warning]/[Error]), with chat, connections and
   every admin action; settings from .env and HAUMEA_SERVER_* variables.
 - Commands: invite, users, role, passwd, remove, fingerprint.
+- CI: static Linux and Windows builds, a smoke test, and a release with both builds for each v* tag.

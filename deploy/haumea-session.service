@@ -1,0 +1,48 @@
+# Haumea multiplayer session (haumea-server from the editor's tools/haumea-server).
+# Not the telemetry server: that one is haumea-server.service.
+[Unit]
+Description=Haumea multiplayer session
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=haumea-session
+Group=haumea-session
+EnvironmentFile=/etc/haumea-session/env
+ExecStart=/usr/local/bin/haumea-session --env /etc/haumea-session/env
+Restart=on-failure
+RestartSec=5
+# SIGTERM: it saves the session before going.
+TimeoutStopSec=30
+
+StateDirectory=haumea-session
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/haumea-session
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6
+UMask=0077
+MemoryMax=1G
+
+[Install]
+WantedBy=multi-user.target

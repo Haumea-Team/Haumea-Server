@@ -1,11 +1,17 @@
+English | [Português (Brasil)](README.pt-BR.md)
+
 # haumea-server
 
-The multiplayer server for [Haumea Studio](https://github.com/itsneufox/haumea), the map editor
+The multiplayer server for [Haumea Studio](https://github.com/Haumea-Team/Haumea-Studio), the map editor
 for open.mp and SA-MP. People join it from Haumea (**File → Multiplayer → Join**) and build one
 map together: they see each other's edits as they happen, each other's cameras and selections, and
 talk in a chat. AI agents (Haumea's Namaka) can join too, tagged as agents and as whose they are.
 
 It is one small program with no dependencies: run it on the machine your game server runs on.
+
+**Download** it from [Releases](https://github.com/Haumea-Team/Haumea-Server/releases) (Linux and
+Windows), and read the **[user guide](docs/USER_GUIDE.md)** for setting it up, inviting people,
+rooms, running it as a service, updating and backups.
 
 ## What it does
 
@@ -93,6 +99,12 @@ copy for its own **Host this map** and for joining servers: `scripts/sync-to-hau
 /path/to/haumea` updates it. Both ends check the protocol number (`MP_PROTOCOL` in
 `core/mpprotocol.h`, now 5) when they connect, so mismatched versions are refused, not misread;
 release them together.
+
+## Contributing
+
+Bug reports and ideas are welcome as issues; see [CONTRIBUTING.md](CONTRIBUTING.md). Security
+problems go privately, as [SECURITY.md](SECURITY.md) says. Questions: the
+[Haumea Discord](https://discord.gg/YSxtANrsB4).
 
 ## Licence
 

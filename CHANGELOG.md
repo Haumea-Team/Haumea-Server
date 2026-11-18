@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased: multiplayer protocol 5
+## 1.0.0: multiplayer protocol 5
 
 - Its own repository, moved out of Haumea's `tools/haumea-server`, with the multiplayer core in `core/`.
 - Accounts, invites and roles (owner, admin, builder, viewer), per server and per room; viewers'
